@@ -9,9 +9,7 @@ profile:
   image: prof_pic.jpg
   image_circular: false
   more_info: >
-    <p>New York University Abu Dhabi</p>
-    <p>Abu Dhabi, UAE</p>
-    <p>aavishkar.gautam@nyu.edu</p>
+      
 
 selected_papers: false
 social: true
