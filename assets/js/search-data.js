@@ -37,15 +37,15 @@ ninja.data = [{
           handler: () => {
             window.location.href = "/cv/";
           },
-        },{id: "post-representation-engineering",
+        },{id: "post-the-log-sum-exp-trick",
         
-          title: "Representation Engineering",
+          title: "The Log-Sum-Exp Trick.",
         
-        description: "Basics of Representation Engineering and its frameworks.",
+        description: "Preventing Numerical Explosion",
         section: "Posts",
         handler: () => {
           
-            window.location.href = "/blog/2025/sample-post/";
+            window.location.href = "/blog/2026/log-sum-exp/";
           
         },
       },{
