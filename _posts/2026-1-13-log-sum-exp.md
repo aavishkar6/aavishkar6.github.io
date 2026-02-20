@@ -1,0 +1,187 @@
+---
+layout: post
+title: The Log-Sum-Exp Trick.
+date: 2026-1-13 10:00:00
+description: Preventing Numerical Explosion
+tags: [miscellaneous]
+categories: [math]
+---
+
+
+# Introduction
+
+When we multiply large  or small numbers, it is easy to underflow or overflow. It is common when working with the small probabilities. To avoid such issue, we work in the $log$ scale. Eventually, we need to add the original numbers by moving out of the log scale. In such cases, we come across log-sum-exp expression,
+
+$$ \text{LSE}(\mathbf{x}) = \log \left( \sum_{i=1}^{n} \exp(x_i) \right) \tag{1} $$
+
+The problem ? If only one $x_i$ is large, the expression becomes infinity `inf`. The **log-sum-exp trick** is a clever way to avoid numerical overflows.
+
+# Derivation
+
+The trick relies on shifting the center of the exponentials. Let $a$ be the maximum value in our vector $x$.
+
+$$ a = \max(x_1, x_2, ...., x_N) \tag{2}$$
+
+We can rewrite the above expression in $1$ as 
+
+$$y = \log \left( \sum_{i=1}^{n} \exp(x_i) \right)$$
+
+$$y = \log \left( \sum_{i=1}^{n} \exp(x_i + a - a) \right)$$
+
+$$y = \log \left( \sum_{i=1}^{n} \exp(a)  \exp(x_i - a) \right)$$
+
+$$ y = \log \left( \exp(a) \sum_{i=1}^{n} \exp(x_i - a) \right)$$
+
+Using the log rule $\log(A.B) = \log A + \log B$,
+
+$$ y = \log( \exp(a)) + \log \left( \sum_{i=1}^{n} \exp(x_i - a) \right)$$
+
+$$ \text{LSE}(\mathbf{x}) = a + \log \left( \sum_{i=1}^{n} \exp(x_i - a) \right) \tag{3}$$
+
+### Why it works ?
+
+By subtracting the max value $a$, the largest term in the exponent becomes $\exp(a - a) = \exp(0) = 1$. All other terms become exponentials of negative numbers, which result in small values between 0 and 1. We have successfully eliminated the explosion.
+
+
+<!-- # Examples in Code
+
+Let us look at the actual code and understand how it is implemented.
+
+
+First, it does not take a large value of $x_n$ to cause numerical overflow.
+```python
+import numpy as np
+
+k = np.array([710, -760, 55])
+exponents = np.exp(k)
+# Output -> 
+``` -->
+
+# Applications
+
+### 1. Softmax Normalization
+
+An immediate application of log-sum-exp is the softmax normalization. Take the softmax function,
+
+$$ \text{Softmax}(z_i) = \frac{\exp(z_i)}{\sum_{i=1}^{N} \exp(z_i)} \tag{4}$$
+
+If $z_i$ at least larger than 710 (in python), the exponent of $z_i$ overflows resulting in `inf` for the whole expression. To avoid it, we convert it to the log scale and apply the log-sum-exp trick to avoid overflows. 
+
+Taking $\log$ on both sides in $eqn(4)$,
+
+$$ \log (\text{Softmax}(z_i)) = z_i - \log \left( {\sum_{i=1}^{N} \exp(z_i)}\right ) $$
+
+Substituting our $\text{LSE}$ definition,
+
+$$ \log (\text{Softmax}(z_i)) = z_i - \text{LSE}(z_i) $$
+
+To get the actual probabilities, we simply exponentiate the result at the very end:
+
+$$ \text{Softmax}(z_i) = \exp(z_i - \text{LSE}(z_i)) \tag{5}$$
+
+This ensures we never calculate $\exp(z_{large})$ directly, preventing overflow.
+
+### 2. Calculating Geometric Mean
+
+If we have values stored as $logs$(for e.g: $\log u_1$, $\log u_2$ and so on  ) and we want to find the log of their average, $\log \left( \frac{1}{N} \sum_{i=1}^{N} u_i \right)$, we can use $\text{LSE}$,
+
+$$\log \left( \frac{1}{N} \sum_{i=1}^{N} u_i \right)$$
+
+$$ = \log \left( \frac{1}{N} \sum_{i=1}^{N} \exp (\log u_i) \right) $$
+
+$$ = \log \left( \frac{1}{N}\right) + \log \left( \sum_{i=1}^{N} \exp (\log u_i) \right) $$
+
+$$ = \log \left( \frac{1}{N}\right) + \text{LSE}(\log \textbf{u}) $$
+
+This allows us to compute averages of probabilities that are too small to represent as normal floating point numbers.
+
+
+<!-- Log-Sum-Exp trick is a clever trick to calculate the log of the sum of the exponentials without causing numerical overflows or underflows.
+
+Consider the expression log-sum-exp,
+
+$$\text{LSE}(\mathbf{x}) = \log \left( \sum_{i=1}^{n} \exp(x_i) \right) \tag{1}$$
+
+is the log of sum of the exponentials. The cause of overflow is the exponentials inside the summation. Number as small as 710 causes the whole expression to overflow and result in `Nan` values. 
+
+Consider this derivation.
+From eqn 1, 
+
+$$ y = \log \left( \sum_{i=1}^{n} \exp(x_i) \right)$$
+
+$$ y = \log \left( \sum_{i=1}^{n} \exp(x_i + a - a) \right)$$
+
+$$ y = \log \left( \sum_{i=1}^{n} \exp(a)  \exp(x_i - a) \right)$$
+
+$$ y = \log \left( \exp(a) \sum_{i=1}^{n} \exp(x_i - a) \right)$$
+
+$$ y = \log( \exp(a)) + \log \left( \sum_{i=1}^{n} \exp(x_i - a) \right)$$
+
+$$ \text{LSE}(\mathbf{x}) = a + \log \left( \sum_{i=1}^{n} \exp(x_i - a) \right) \tag{2}$$
+
+$$ \text{where } a = \max(x_1, x_2, ...., x_N)$$
+
+When $x_i$'s are large values, the expression inside $exp()$ is always less than or equal to 0, and as a result the sum of exponents is stable.
+
+## Calculating means with log-sum-exp.
+
+An immediate application is calculating the mean of a vector $u$ entirely on the log scale. Given $\log(u)$, we return $\log mean(u)$.
+
+$$
+\log \left( \frac{1}{N} \sum_{i=1}^{n} u_i \right) = \log \frac{1}{N} + \log \left (\sum_{i=1}^{n} \exp(\log u_i) \right)
+$$
+$$
+ = \log \frac{1}{N} + \text{LSE}(\log u)
+$$
+
+
+## Softmax Normalization with log-sum-exp
+
+Another application is softmax normalization. Take the softmax function,
+
+$$ \text{Softmax}(z_i) = \frac{\exp(z_i)}{\sum_{i=1}^{N} \exp(z_i)} $$
+
+$$ \log (\text{Softmax}(z_i)) = z_i - \log \left( {\sum_{i=1}^{N} \exp(z_i)}\right ) $$
+
+$$ \log (\text{Softmax}(z_i)) = z_i - \text{LSE}(z_i) $$
+
+$$ \text{Softmax}(z_i) = \exp(z_i - \text{LSE}(z_i)) $$
+
+Doing the softmax normalization this way maintains numerical stability.
+
+
+<details>
+THe softmax function normalizes a given vector by raising each componenet to its exponent before dividing it by the sum of its exponents.
+
+$$ \text{Softmax}(z_i) = \frac{\exp(z_i)}{\sum_{j} \exp(z_j)} $$
+
+</details>
+
+
+Let's start with some basic motivations.
+
+When performing operations with large or small numbers, it is easy to fall in the trap of numerical overflow.  
+Let's take a simple example.
+```python
+a = [710, -745, 200]
+print(np.exp(a))
+# Output: [ inf, 0.00000000e+00, 7.22597377e+86])
+```
+Raising `710` to `exp` causes numerical overflow. To avoid this, we generally work with the log scale to avoid such issues. We do not move out of the log scale unless at the very last step. For example,
+Given a and b, the multiplication can stay on the log scale,
+`log(a * b) = log(a) + log(b)`  
+However, addition requires us to bring exponents in the equation(which is the very thing we are trying to avoid.)
+`log(a + b) = log( exp(log(a)) + exp(log(b)))`
+
+
+In statistical modeling, normalizing vectors of log probabilities is a common operation. However, it can result in under or overflow when exponentiating large values.
+
+
+Often times in machine learning and modeling, we come across large and small numbers that cause overflows or underflows.
+
+While normalizing values / vectos, we use the softmax function which raises each value to the exponential before normalizing them. This is a major reason behind overflowing.
+
+$$ \text{Softmax}(z_i) = \frac{\exp(z_i)}{\sum_{j} \exp(z_j)} $$
+
+We use the log scale to avoid underflow or overflow. -->
+
