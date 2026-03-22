@@ -37,7 +37,18 @@ ninja.data = [{
           handler: () => {
             window.location.href = "/cv/";
           },
-        },{id: "post-the-log-sum-exp-trick",
+        },{id: "post-an-intuitive-pov-of-principal-component-analysis-pca",
+        
+          title: "An intuitive POV of Principal Component Analysis (PCA)",
+        
+        description: "The intuition and maths behind PCA",
+        section: "Posts",
+        handler: () => {
+          
+            window.location.href = "/blog/2026/PCA/";
+          
+        },
+      },{id: "post-the-log-sum-exp-trick",
         
           title: "The Log-Sum-Exp Trick.",
         
