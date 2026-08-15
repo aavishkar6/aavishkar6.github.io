@@ -37,7 +37,18 @@ ninja.data = [{
           handler: () => {
             window.location.href = "/cv/";
           },
-        },{id: "post-an-intuitive-pov-of-principal-component-analysis-pca",
+        },{id: "post-multi-dimensionality-of-harm",
+        
+          title: "Multi-dimensionality of harm",
+        
+        description: "Harmfulness representation in LLMs.",
+        section: "Posts",
+        handler: () => {
+          
+            window.location.href = "/blog/2026/Harm-Multi/";
+          
+        },
+      },{id: "post-an-intuitive-pov-of-principal-component-analysis-pca",
         
           title: "An intuitive POV of Principal Component Analysis (PCA)",
         
