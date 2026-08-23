@@ -16,26 +16,12 @@ ninja.data = [{
           handler: () => {
             window.location.href = "/blog/";
           },
-        },{id: "nav-projects",
-          title: "Projects",
-          description: "Interesting projects imo.",
-          section: "Navigation",
-          handler: () => {
-            window.location.href = "/projects/";
-          },
-        },{id: "nav-repositories",
-          title: "Repositories",
-          description: "A list of repos on things I am interested to work and excited to work on.",
-          section: "Navigation",
-          handler: () => {
-            window.location.href = "/repositories/";
-          },
         },{id: "nav-cv",
           title: "CV",
           description: "",
           section: "Navigation",
           handler: () => {
-            window.location.href = "/cv/";
+            window.location.href = "/http:/127.0.0.1:4000/assets/pdf/CV_Aavishkar_Gautam.pdf";
           },
         },{id: "post-multi-dimensionality-of-harm",
         
