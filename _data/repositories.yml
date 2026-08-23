@@ -4,6 +4,3 @@ github_users:
 repo_description_lines_max: 2
 
 github_repos:
-  - aavishkar6/neural_activation_collection
-  - aavishkar6/backend-services
-  - aavishkar6/activation_direction_vis

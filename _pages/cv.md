@@ -1,6 +1,6 @@
 ---
 layout: cv
-permalink: /cv/
+permalink: http://127.0.0.1:4000/assets/pdf/CV_Aavishkar_Gautam.pdf
 title: CV
 nav: true
 nav_order: 5
